@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: books-catalog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: books-catalog-app
+  template:
+    metadata:
+      labels:
+        app: books-catalog-app
+    spec:
+      containers:
+      - name: bookscatalog-app
+        image: books-catalog
+        imagePullPolicy: Never
+        env:
+        - name: PORT
+          value: "8000"
+        - name: DATABASE_URL
+          value: postgresql://book_catalog_7fzx_user:CD1yxDOOMqYkEPMy7y64rkF8sC3YGBMU@dpg-crcm2ubv2p9s73cifvpg-a.oregon-postgres.render.com/book_catalog_7fzx
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: books-catalog-service
+spec:
+  selector:
+    app: books-catalog-app
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 80  # The port exposed by the Service
+      targetPort: 8000  # The port the container listens on
+      nodePort: 30005
